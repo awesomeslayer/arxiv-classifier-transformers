@@ -1,0 +1,14 @@
+torch
+transformers
+datasets
+accelerate
+evaluate
+matplotlib
+jupyter
+scikit-learn
+networkx
+tqdm
+numpy
+scipy
+python-dotenv
+pandas

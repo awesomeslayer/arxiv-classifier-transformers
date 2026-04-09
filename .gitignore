@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+
+# Data & Models
+arxiv_data/
+data/
+outputs/
+*.parquet
+
+# Sensitive
+download/proxy_config.py
+CONTEXT.TXT
+train_log.txt
+.vscode/
+collect_context.py
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+venv/
+.venv/
+
+# Environment
+.env
+
+# Data and Models
+arxiv_data/
+data/
+outputs/
+*.parquet
+
+# Jupyter
+.ipynb_checkpoints
+
+# OS
+.DS_Store
+
+credentials
