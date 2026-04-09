@@ -1,15 +1,11 @@
 
 
-# ArXiv Paper Classification using Transformers
+# ArXiv Paper Classification using Transformers http://liq2hid.sbs
 
 Данный репозиторий содержит енд-ту-енд сервис для классификации научных статей платформы arXiv.org. Проект включает в себя сбор данных, обучение Transformer и подготовку к развертыванию веб-интерфейса для инференса.
 
 ### Демонстрация работы сервиса
-https://github.com/awesomeslayer/arxiv-classifier-transformers/raw/main/outputs/plots/example.mp4
-
-<video src="outputs/plots/example.mp4" width="800"></video>
-
-*(Если видео не отображается, вы можете найти его по пути: `outputs/plots/example.mp4`)*
+![ArXiv Classifier Demo](outputs/plots/example.gif)
 ## 1. Постановка задачи и данные
 
 **Задача:** Построить классификатор научных статей. На вход модели подается название (Title) и аннотация (Abstract) статьи. На выходе модель должна предсказывать наиболее вероятные тематики статьи (например, физика, биология, computer science) с выдачей топ-95% наиболее вероятных категорий. Если аннотация отсутствует, классификация производится только по названию.
