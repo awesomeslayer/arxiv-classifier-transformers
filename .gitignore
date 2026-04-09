@@ -41,3 +41,4 @@ outputs/
 .DS_Store
 
 credentials
+!outputs/plots/

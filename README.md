@@ -1,3 +1,5 @@
+
+
 # ArXiv Paper Classification using Transformers
 
 Данный репозиторий содержит енд-ту-енд сервис для классификации научных статей платформы arXiv.org. Проект включает в себя сбор данных, обучение Transformer и подготовку к развертыванию веб-интерфейса для инференса.
@@ -8,6 +10,54 @@
 
 **Данные:** 
 В качестве источника данных используется датасет `permutans/arxiv-papers-by-subject` из HuggingFace. Для ускорения загрузки и работы сети реализован скрипт `download/download.py`, который скачивает данные в формате `.parquet` напрямую в локальную директорию `arxiv_data`. Скрипт поддерживает возобновление загрузки и многопоточность, а также проксю потому что нынче тяжело с hf чет скачать нормально (но ее вставляйте сами в .env)
+
+**Пример структуры данных:**
+```json
+{
+  "title": "Attention Is All You Need",
+  "abstract": "The dominant sequence transduction models are based on complex recurrent or convolutional neural networks...",
+  "subjects": "Computation and Language (cs.CL); Machine Learning (cs.LG)"
+}
+```
+
+### Анализ данных обучающей выборки
+
+После загрузки датасета и отсечения редких классов (менее 50 примеров), мы получили следующие показатели на обучающей выборке:
+* **Samples after filtering rare (<50) classes:** 299,905
+* **Total unique classes:** 101
+
+Как видно из статистики ниже, данные имеют сильный естественный дисбаланс (что типично для научных публикаций):
+
+**--- Top 10 Most Common Classes ---**
+```text
+Computer Vision and Pattern Recognition (cs)         34637
+Machine Learning (cs)                                15810
+Computation and Language (cs)                        12802
+Analysis of PDEs (math)                              10631
+Combinatorics (math)                                 10588
+Algebraic Geometry (math)                             9609
+Probability (math)                                    9007
+Cosmology and Nongalactic Astrophysics (astro-ph)     8755
+Robotics (cs)                                         7148
+Numerical Analysis (math)                             7110
+```
+
+**--- Top 10 Least Common Classes ---**
+```text
+Symbolic Computation (cs)                            331
+Disordered Systems and Neural Networks (cond-mat)    284
+Atomic and Molecular Clusters (physics)              260
+Popular Physics (physics)                            215
+Econometrics (econ)                                  215
+Pattern Formation and Solitons (nlin)                201
+Mathematical Software (cs)                           195
+Cellular Automata and Lattice Gases (nlin)           144
+Operating Systems (cs)                               127
+Computational Finance (q-fin)                         63
+```
+
+![Data Distribution](outputs/plots/data_distribution.png)
+*(График распределения топ-25 категорий датасета)*
 
 ## 2. Архитектура решения и результаты обучения
 
@@ -92,6 +142,13 @@ HF_TOKEN= #your
 python download/download.py
 ```
 *Примечание:* По умолчанию скрипт скачивает категории `cs`, `math`, `physics`. Чтобы добавить другие категории (например, `q-bio` или `stat`), отредактируйте список `domains` внутри файла `download/download.py`.
+
+### Шаг 4.5: Анализ данных (Опционально)
+Для воспроизведения анализа и генерации графика распределения данных запустите:
+```bash
+python analysis/data_analysis.py --samples 300000
+```
+Скрипт выведет статистику в консоль и сохранит график в `outputs/plots/data_distribution.png`.
 
 ### Шаг 5: Запуск обучения (Fine-Tuning)
 После успешной загрузки данных можно запустить процесс обучения. Скрипт автоматически найдет все `.parquet` файлы, подготовит токенизатор и запустит Trainer.
