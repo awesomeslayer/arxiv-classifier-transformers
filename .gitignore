@@ -31,7 +31,9 @@ venv/
 # Data and Models
 arxiv_data/
 data/
-outputs/
+
+outputs/best_model
+outputs/model
 *.parquet
 
 # Jupyter
@@ -41,4 +43,3 @@ outputs/
 .DS_Store
 
 credentials
-!outputs/plots/
