@@ -13,3 +13,5 @@ scipy
 python-dotenv
 pandas
 seaborn
+fastapi
+uvicorn

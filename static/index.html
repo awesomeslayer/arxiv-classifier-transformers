@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ArXiv Paper Classifier</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen text-gray-800 font-sans">
+    <div class="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        
+        <!-- Header -->
+        <div class="text-center mb-10">
+            <h1 class="text-4xl font-extrabold text-indigo-600 mb-2">ArXiv Classifier</h1>
+            <p class="text-lg text-gray-500">AI-powered scientific paper categorization</p>
+        </div>
+
+        <!-- Input Form -->
+        <div class="bg-white rounded-xl shadow-md p-6 sm:p-8 mb-8">
+            <div class="space-y-6">
+                <div>
+                    <label for="title" class="block text-sm font-medium text-gray-700">Paper Title *</label>
+                    <input type="text" id="title" placeholder="e.g. Attention Is All You Need" 
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-3 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                </div>
+                <div>
+                    <label for="abstract" class="block text-sm font-medium text-gray-700">Abstract (Optional)</label>
+                    <textarea id="abstract" rows="4" placeholder="Enter paper abstract here..."
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-3 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"></textarea>
+                </div>
+                <button id="submitBtn" onclick="predict()" 
+                    class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                    Classify Paper
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loading" class="hidden text-center py-8">
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+            <p class="mt-2 text-gray-500">Analyzing text...</p>
+        </div>
+
+        <!-- Results Section -->
+        <div id="resultsContainer" class="hidden fade-in bg-white rounded-xl shadow-md p-6 sm:p-8">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Predicted Categories (Top 95% confidence)</h2>
+            <div id="resultsList" class="space-y-4">
+                <!-- Results will be injected here -->
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        async function predict() {
+            const title = document.getElementById('title').value;
+            const abstract = document.getElementById('abstract').value;
+            const btn = document.getElementById('submitBtn');
+            const loading = document.getElementById('loading');
+            const resultsContainer = document.getElementById('resultsContainer');
+            const resultsList = document.getElementById('resultsList');
+
+            if (!title.trim()) {
+                alert("Please enter a title.");
+                return;
+            }
+
+            // UI State updates
+            btn.disabled = true;
+            btn.classList.add('opacity-50');
+            loading.classList.remove('hidden');
+            resultsContainer.classList.add('hidden');
+            resultsList.innerHTML = '';
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, abstract })
+                });
+                
+                const data = await response.json();
+
+                if (data.error) {
+                    alert(data.error);
+                    return;
+                }
+
+                // Render results
+                data.predictions.forEach((pred, index) => {
+                    const percentage = (pred.score * 100).toFixed(1);
+                    const colorClass = index === 0 ? 'bg-indigo-600' : 'bg-indigo-400';
+                    
+                    const barHtml = `
+                        <div>
+                            <div class="flex justify-between text-sm font-medium mb-1">
+                                <span class="text-gray-700">${pred.label}</span>
+                                <span class="text-gray-500">${percentage}%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                <div class="${colorClass} h-2.5 rounded-full" style="width: ${percentage}%"></div>
+                            </div>
+                        </div>
+                    `;
+                    resultsList.innerHTML += barHtml;
+                });
+
+                resultsContainer.classList.remove('hidden');
+            } catch (error) {
+                alert("Error connecting to server.");
+                console.error(error);
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50');
+                loading.classList.add('hidden');
+            }
+        }
+    </script>
+</body>
+</html>(venv) root@whatever:~/HFtune# 
