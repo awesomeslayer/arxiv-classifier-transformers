@@ -3,7 +3,6 @@ import argparse
 from pathlib import Path
 from dotenv import load_dotenv
 
-# Загружаем настройки прокси ДО импорта HuggingFace
 env_path = Path(__file__).resolve().parent.parent / '.env'
 load_dotenv(dotenv_path=env_path)
 
@@ -15,7 +14,6 @@ if PROXY_URL:
     os.environ["HTTPS_PROXY"] = PROXY_URL
 os.environ["HF_ENDPOINT"] = os.getenv("HF_ENDPOINT", "https://huggingface.co")
 
-# Теперь безопасно импортируем трансформеры
 from transformers import TrainingArguments, Trainer
 from data_loader import load_and_prepare_data
 from utils import compute_metrics, plot_metrics
@@ -51,13 +49,13 @@ def main():
         per_device_eval_batch_size=args.batch_size,
         num_train_epochs=args.epochs,
         weight_decay=0.01,
-        evaluation_strategy="steps",
+        eval_strategy="steps",
         eval_steps=500,
         save_strategy="steps",
         save_steps=500,
         logging_steps=100,
         load_best_model_at_end=True,
-        metric_for_best_model="f1", # лучше f1, так как классы могут быть не сбалансированы
+        metric_for_best_model="f1", 
         bf16=True,                  
         optim="adamw_torch_fused",  
         report_to="none" 

@@ -4,7 +4,6 @@ from pathlib import Path
 from dotenv import load_dotenv
 from huggingface_hub import snapshot_download
 
-# Загружаем переменные из .env файла в корне проекта
 env_path = Path(__file__).resolve().parent.parent / '.env'
 load_dotenv(dotenv_path=env_path)
 
@@ -20,12 +19,10 @@ if HF_TOKEN:
     os.environ["HF_TOKEN"] = HF_TOKEN
 
 def download_all_arxiv():
-    # Путь четко на уровень выше скрипта -> arxiv_data
     local_dir = Path(__file__).resolve().parent.parent / "arxiv_data"
     local_dir.mkdir(exist_ok=True)
     
-    # Можно убрать часть доменов, если нужно скачать быстрее
-    domains = ["cs", "math", "physics"] # Сократил для скорости. Если нужно всё, верни твой список.
+    domains = ["cs", "math", "physics"] #add more if needed
     
     print(f"Syncing to: {local_dir}")
     
@@ -36,7 +33,6 @@ def download_all_arxiv():
                 repo_id="permutans/arxiv-papers-by-subject",
                 repo_type="dataset",
                 local_dir=local_dir,
-                # Качаем только parquet файлы
                 allow_patterns=f"data/{domain}.*/**/*.parquet", 
                 max_workers=8,
                 resume_download=True
